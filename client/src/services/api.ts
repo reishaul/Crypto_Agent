@@ -27,3 +27,25 @@ export const saveOnboardingPreferences = async (email: string, preferences: { cr
     throw error.response?.data || { error: 'Something went wrong' };
   }
 };
+
+export const getUserProfile = async (email: string) => {
+  try {
+    const response = await axios.get(`${API_URL}/user/profile/${email}`);
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data || { error: 'Failed to fetch user profile' };
+  }
+};
+
+//based on user preferences, get AI advice
+export const getAiAdvice = async (investorType: string, cryptoAssets: string[]) => {
+  try {
+    const response = await axios.post(`${API_URL}/ai/advice`, {
+      investorType,
+      cryptoAssets,
+    });
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data || { error: 'Failed to fetch AI advice' };
+  }
+};

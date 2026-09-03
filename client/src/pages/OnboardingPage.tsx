@@ -23,16 +23,16 @@ export default function OnboardingPage() {
       await saveOnboardingPreferences(email, { cryptoAssets, investorType, contentTypes });
       navigate('/dashboard'); // מעבר לדאשבורד לאחר הצלחה
     } catch (err: any) {
-      setError(err.error || 'שגיאה בשמירת ההעדפות');
+      setError(err.error || 'Failed to save onboarding preferences. Please try again.');
     }
   };
 
   return (
     <div style={{ maxWidth: '500px', margin: '40px auto', padding: '20px', fontFamily: 'sans-serif' }}>
-      <h2>שאלון התאמה אישית - AI Crypto Advisor</h2>
+      <h2>Onboarding Form - AI Crypto Advisor</h2>
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
         <div>
-          <label>אימייל שלך (לאימות החשבון):</label><br />
+          <label>Your Email (for account verification):</label><br />
           <input 
             type="email" 
             value={email} 
@@ -43,7 +43,7 @@ export default function OnboardingPage() {
         </div>
 
         <div>
-          <label>אילו מטבעות מעניינים אותך?</label><br />
+          <label>Which crypto assets are you interested in?</label><br />
           {['Bitcoin (BTC)', 'Ethereum (ETH)', 'Solana (SOL)'].map(crypto => (
             <label key={crypto} style={{ display: 'block', marginTop: '5px' }}>
               <input 
@@ -56,16 +56,16 @@ export default function OnboardingPage() {
         </div>
 
         <div>
-          <label>מה פרופיל המשקיע שלך?</label><br />
+          <label>What is your investment profile?</label><br />
           <select 
             value={investorType} 
             onChange={(e) => setInvestorType(e.target.value)}
             style={{ width: '100%', padding: '8px', marginTop: '5px' }}
           >
-            <option value="">בחר פרופיל...</option>
-            <option value="conservative">שמרן (Conservative)</option>
-            <option value="moderate">מתון (Moderate)</option>
-            <option value="aggressive">אגרסיבי / סיכון גבוה (Aggressive)</option>
+            <option value="">Choose a profile...</option>
+            <option value="conservative">Conservative</option>
+            <option value="moderate">Moderate</option>
+            <option value="aggressive">Aggressive</option>
           </select>
         </div>
 
@@ -75,7 +75,7 @@ export default function OnboardingPage() {
           type="submit" 
           style={{ padding: '10px', background: '#28a745', color: 'white', border: 'none', cursor: 'pointer', fontSize: '16px' }}
         >
-          סיים והכנס לדאשבורד
+          Submit and Go to Dashboard
         </button>
       </form>
     </div>

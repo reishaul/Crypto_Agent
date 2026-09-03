@@ -16,12 +16,14 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // שליחת נתונים לשרת
+      //send registration data to the backend
       await registerUser(name, email, password);
+
+      localStorage.setItem('userEmail', email);
       // מעבר לשאלון האונבורדינג לאחר הצלחה
       navigate('/onboarding');
     } catch (err: any) {
-      setError(err.error || 'שגיאה בהרשמה למערכת');
+      setError(err.error || 'registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -29,10 +31,10 @@ export default function LoginPage() {
 
   return (
     <div style={{ maxWidth: '400px', margin: '40px auto', padding: '20px', fontFamily: 'sans-serif' }}>
-      <h2>AI Crypto Advisor - הרשמה / התחברות</h2>
+      <h2>AI Crypto Advisor - register</h2>
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
         <div>
-          <label>שם מלא:</label><br />
+          <label>Full Name:</label><br />
           <input 
             type="text" 
             value={name} 
@@ -52,7 +54,7 @@ export default function LoginPage() {
           />
         </div>
         <div>
-          <label>סיסמה:</label><br />
+          <label>Password:</label><br />
           <input 
             type="password" 
             value={password} 
@@ -67,7 +69,7 @@ export default function LoginPage() {
           disabled={loading}
           style={{ padding: '10px', background: '#007bff', color: 'white', border: 'none', cursor: 'pointer', fontSize: '16px' }}
         >
-          {loading ? 'טוען...' : 'הירשם והמשך לאונבורדינג'}
+          {loading ? 'loading...' : ' Register and Continue to Onboarding'}
         </button>
       </form>
     </div>

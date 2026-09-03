@@ -1,19 +1,8 @@
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import OnboardingPage from './pages/OnboardingPage';
-//import DashboardPage from './pages/DashboardPage';
-
-
-//עמוד דאשבורד זמני א
-function DashboardPage() {
-  return (
-    <div style={{ padding: '20px', fontFamily: 'sans-serif', textAlign: 'center' }}>
-      <h1>ברוך הבא לדאשבורד של AI Crypto Advisor! 🚀</h1>
-      <p>ההעדפות שלך נשמרו בהצלחה במסד הנתונים.</p>
-    </div>
-  );
-}
-
+import DashboardPage from './pages/DashboardPage'; // ייבוא עמוד הדאשבורד המלא
 
 export default function App() {
   return (
