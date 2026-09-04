@@ -16,62 +16,92 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      //send registration data to the backend
       await registerUser(name, email, password);
-
       localStorage.setItem('userEmail', email);
-      // מעבר לשאלון האונבורדינג לאחר הצלחה
       navigate('/onboarding');
     } catch (err: any) {
-      setError(err.error || 'registration failed. Please try again.');
+      setError(err.error || 'Registration failed');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: '40px auto', padding: '20px', fontFamily: 'sans-serif' }}>
-      <h2>AI Crypto Advisor - register</h2>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-        <div>
-          <label>Full Name:</label><br />
-          <input 
-            type="text" 
-            value={name} 
-            onChange={(e) => setName(e.target.value)} 
-            required 
-            style={{ width: '100%', padding: '8px', marginTop: '5px' }}
-          />
-        </div>
-        <div>
-          <label>אימייל:</label><br />
-          <input 
-            type="email" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-            required 
-            style={{ width: '100%', padding: '8px', marginTop: '5px' }}
-          />
-        </div>
-        <div>
-          <label>Password:</label><br />
-          <input 
-            type="password" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-            required 
-            style={{ width: '100%', padding: '8px', marginTop: '5px' }}
-          />
-        </div>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <button 
-          type="submit" 
-          disabled={loading}
-          style={{ padding: '10px', background: '#007bff', color: 'white', border: 'none', cursor: 'pointer', fontSize: '16px' }}
-        >
-          {loading ? 'loading...' : ' Register and Continue to Onboarding'}
-        </button>
-      </form>
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'linear-gradient(135deg, #0b192c 0%, #102a43 50%, #1e3e62 100%)',
+      padding: '20px',
+      fontFamily: 'sans-serif',
+      boxSizing: 'border-box',
+      width: '100%'
+    }}>
+      <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+        <h1 style={{ fontSize: '36px', margin: '0 0 8px 0', color: '#ffffff', fontWeight: '700', letterSpacing: '-0.5px' }}>
+          Welcome to AI Crypto Advisor
+        </h1>
+        <p style={{ fontSize: '15px', color: '#ff6b6b', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '600' }}>
+          Your private advisor
+        </p>
+      </div>
+
+      <div style={{
+        width: '100%',
+        maxWidth: '460px',
+        padding: '40px',
+        background: 'rgba(16, 42, 67, 0.75)',
+        backdropFilter: 'blur(12px)',
+        borderRadius: '16px',
+        boxShadow: '0 12px 40px rgba(0, 0, 0, 0.4)',
+        border: '1px solid rgba(255, 255, 255, 0.1)'
+      }}>
+        <h2 style={{ color: '#ffffff', marginBottom: '24px', textAlign: 'center', fontSize: '22px', fontWeight: '500' }}>
+          Create Your Account
+        </h2>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div>
+            <label style={{ color: '#cbd5e1', fontWeight: '500', fontSize: '14px' }}>Full Name:</label><br />
+            <input 
+              type="text" 
+              value={name} 
+              onChange={(e) => setName(e.target.value)} 
+              required 
+              style={{ width: '100%', padding: '12px', marginTop: '6px', borderRadius: '8px', border: '1px solid #334e68', background: '#0b192c', color: '#fff', boxSizing: 'border-box', outline: 'none' }}
+            />
+          </div>
+          <div>
+            <label style={{ color: '#cbd5e1', fontWeight: '500', fontSize: '14px' }}>Email:</label><br />
+            <input 
+              type="email" 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)} 
+              required 
+              style={{ width: '100%', padding: '12px', marginTop: '6px', borderRadius: '8px', border: '1px solid #334e68', background: '#0b192c', color: '#fff', boxSizing: 'border-box', outline: 'none' }}
+            />
+          </div>
+          <div>
+            <label style={{ color: '#cbd5e1', fontWeight: '500', fontSize: '14px' }}>Password:</label><br />
+            <input 
+              type="password" 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)} 
+              required 
+              style={{ width: '100%', padding: '12px', marginTop: '6px', borderRadius: '8px', border: '1px solid #334e68', background: '#0b192c', color: '#fff', boxSizing: 'border-box', outline: 'none' }}
+            />
+          </div>
+          {error && <p style={{ color: '#ff6b6b', fontSize: '14px', textAlign: 'center' }}>{error}</p>}
+          <button 
+            type="submit" 
+            disabled={loading}
+            style={{ padding: '14px', background: '#ff6b6b', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '16px', fontWeight: '600', transition: 'opacity 0.2s', marginTop: '10px' }}
+          >
+            {loading ? 'Loading...' : 'Register & Continue'}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

@@ -2,14 +2,15 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import User from './models/User.js'; // ודא שהנתיב למודל נכון
+import User from './models/User.js'; //
+import aiRoutes from './routes/aiRoutes.js';
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
 app.use(cors());
-
+app.use('/api/ai', aiRoutes);
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || '';
 
@@ -79,6 +80,8 @@ app.get('/api/user/profile/:email', async (req, res) => {
     res.status(500).json({ error: 'Server error fetching user profile' });
   }
 });
+
+app.use('/api/ai', aiRoutes);
 
 // נקודת קצה לניתוח AI
 app.post('/api/ai/advice', async (req, res) => {
