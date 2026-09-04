@@ -1,12 +1,15 @@
-import { useEffect, useState } from 'react';
-import { getUserProfile} from '../services/api';
-import { getAiAdvice } from '../services/aiApi';
+import React, { useEffect, useState } from 'react';
+import { getUserProfile } from '../services/api';
+import Navbar from '../components/Navbar';
+import AIInsight from '../components/AIInsight';
+import CoinPrices from '../components/CoinPrices';
+import MarketNews from '../components/MarketNews';
+import CryptoMeme from '../components/CryptoMeme';
 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [aiAdvice, setAiAdvice] = useState('');
   
   const userEmail = localStorage.getItem('userEmail') || 'test@example.com';
 
@@ -25,45 +28,104 @@ export default function DashboardPage() {
     fetchUserData();
   }, [userEmail]);
 
-  useEffect(() => {
-    if (user?.preferences) {
-      getAiAdvice(user.preferences.investorType, user.preferences.cryptoAssets)
-        .then((res: { advice: string }) => setAiAdvice(res.advice))
-        .catch((err: unknown) => console.error(err));
-    }
-  }, [user]);
+  if (loading) return <div style={{ textAlign: 'center', padding: '80px', color: '#ffffff', background: '#0b192c', minHeight: '100vh', fontSize: '18px' }}>Loading your crypto terminal...</div>;
+  if (error) return <div style={{ textAlign: 'center', padding: '80px', color: '#ff6b6b', background: '#0b192c', minHeight: '100vh', fontSize: '18px' }}>{error}</div>;
 
-  if (loading) return <div style={{ textAlign: 'center', padding: '50px', color: '#102a43' }}>Loading data...</div>;
-  if (error) return <div style={{ textAlign: 'center', padding: '50px', color: '#ff6b6b' }}>{error}</div>;
-
-  return (
-    <div style={{ maxWidth: '800px', margin: '40px auto', padding: '30px', background: '#ffffff', borderRadius: '12px', boxShadow: '0 4px 20px rgba(16, 42, 67, 0.08)' }}>
-      <div style={{ borderBottom: '2px solid #f0f4f8', paddingBottom: '20px', marginBottom: '25px' }}>
-        <h1 style={{ color: '#102a43', margin: '0 0 8px 0' }}>Welcome back, {user?.name || 'Valued User'}! 🚀</h1>
-        <p style={{ color: '#627d98', margin: 0 }}>Email: {user?.email}</p>
-      </div>
-
-      <div style={{ display: 'grid', gap: '20px' }}>
-        <div style={{ padding: '20px', background: '#f4f7f6', borderRadius: '8px', borderLeft: '4px solid #ff6b6b' }}>
-          <h3 style={{ color: '#102a43', marginTop: 0 }}>Your Personal Preferences</h3>
-          <p><strong>Investor Profile:</strong> {user?.preferences?.investorType || 'Not defined yet'}</p>
+return (
+    <div style={{ 
+      minHeight: '100vh', 
+      background: 'linear-gradient(135deg, #0b192c 0%, #102a43 50%, #1e3e62 100%)', 
+      padding: '30px 40px', // הגדלת הרווחים בצדדים במסך רחב
+      fontFamily: 'sans-serif',
+      boxSizing: 'border-box',
+      width: '100%'
+    }}>
+      {/* הרחבת רוחב המקסימום של הטרמינל כדי שיתפוס את רוב מסך המחשב */}
+      <div style={{ maxWidth: '1440px', margin: '0 auto', width: '100%' }}>
+        <Navbar />
+        
+        {/* Hero Welcome Section */}
+        <div style={{ 
+          background: 'rgba(16, 42, 67, 0.8)', 
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          padding: '30px', 
+          borderRadius: '16px', 
+          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)',
+          marginTop: '25px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '20px'
+        }}>
           <div>
-            <strong>Tracked Assets:</strong>
-            <ul style={{ margin: '8px 0 0 20px', padding: 0 }}>
-              {user?.preferences?.cryptoAssets?.length > 0 ? (
-                user.preferences.cryptoAssets.map((crypto: string) => (
-                  <li key={crypto} style={{ color: '#334e68', marginBottom: '4px' }}>{crypto}</li>
-                ))
-              ) : (
-                <li>No assets selected yet</li>
-              )}
-            </ul>
+            <h1 style={{ color: '#ffffff', margin: '0 0 8px 0', fontSize: '28px' }}>
+              Welcome back, {user?.name || 'Trader'}! 🚀
+            </h1>
+            <p style={{ color: '#94a3b8', margin: 0, fontSize: '14px' }}>Terminal ID: {user?.email}</p>
+          </div>
+          
+          <div style={{ 
+            background: 'rgba(255, 107, 107, 0.15)', 
+            border: '1px solid #ff6b6b', 
+            padding: '10px 18px', 
+            borderRadius: '12px',
+            display: 'flex',
+            flexDirection: 'column'
+          }}>
+            <span style={{ fontSize: '12px', color: '#ff6b6b', fontWeight: 'bold', textTransform: 'uppercase' }}>Investor Profile</span>
+            <span style={{ fontSize: '16px', color: '#ffffff', fontWeight: '600', textTransform: 'capitalize' }}>
+              {user?.preferences?.investorType || 'Standard'}
+            </span>
           </div>
         </div>
 
-        <div style={{ padding: '20px', background: '#102a43', color: '#ffffff', borderRadius: '8px' }}>
-          <h3 style={{ color: '#ff6b6b', marginTop: 0 }}>🤖 Personal AI Analysis & Advice</h3>
-          <p style={{ lineHeight: '1.6', margin: 0 }}>{aiAdvice || 'Loading AI recommendations...'}</p>
+        {/* Main Grid Layout - פריסה רחבה המנצלת את כל רוחב המסך */}
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '25px', marginTop: '25px' }}>
+          
+          {/* Left Column / Main Focus */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
+            <CoinPrices cryptoAssets={user?.preferences?.cryptoAssets} />
+            <AIInsight 
+              investorType={user?.preferences?.investorType} 
+              cryptoAssets={user?.preferences?.cryptoAssets} 
+            />
+            <MarketNews />
+          </div>
+
+          {/* Right Column / Side Widgets */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
+            <CryptoMeme />
+            
+            {/* Quick Tracked Assets Card */}
+            <div style={{ 
+              padding: '24px', 
+              background: 'rgba(16, 42, 67, 0.8)', 
+              borderRadius: '16px', 
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: '0 8px 25px rgba(0, 0, 0, 0.2)',
+              color: '#ffffff'
+            }}>
+              <h3 style={{ color: '#ff6b6b', marginTop: 0, marginBottom: '15px', fontSize: '18px' }}>
+                ⭐ Tracked Watchlist
+              </h3>
+              {user?.preferences?.cryptoAssets?.length > 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {user.preferences.cryptoAssets.map((crypto: string) => (
+                    <div key={crypto} style={{ padding: '12px 14px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontWeight: '500' }}>{crypto}</span>
+                      <span style={{ color: '#10b981', fontSize: '12px', background: 'rgba(16, 185, 129, 0.15)', padding: '4px 10px', borderRadius: '6px' }}>Active</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p style={{ color: '#94a3b8', fontSize: '14px' }}>No assets selected yet.</p>
+              )}
+            </div>
+
+          </div>
+
         </div>
       </div>
     </div>

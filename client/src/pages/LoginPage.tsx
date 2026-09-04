@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { registerUser } from '../services/api';
+import { registerUser, loginUser } from '../services/api';
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const [isLoginMode, setIsLoginMode] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,11 +17,17 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      await registerUser(name, email, password);
-      localStorage.setItem('userEmail', email);
-      navigate('/onboarding');
+      if (isLoginMode) {
+        await loginUser(email, password);
+        localStorage.setItem('userEmail', email);
+        navigate('/dashboard');
+      } else {
+        await registerUser(name, email, password);
+        localStorage.setItem('userEmail', email);
+        navigate('/onboarding');
+      }
     } catch (err: any) {
-      setError(err.error || 'Registration failed');
+      setError(err.error || 'Operation failed');
     } finally {
       setLoading(false);
     }
@@ -59,19 +66,22 @@ export default function LoginPage() {
         border: '1px solid rgba(255, 255, 255, 0.1)'
       }}>
         <h2 style={{ color: '#ffffff', marginBottom: '24px', textAlign: 'center', fontSize: '22px', fontWeight: '500' }}>
-          Create Your Account
+          {isLoginMode ? 'Sign In to Your Account' : 'Create Your Account'}
         </h2>
+        
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <div>
-            <label style={{ color: '#cbd5e1', fontWeight: '500', fontSize: '14px' }}>Full Name:</label><br />
-            <input 
-              type="text" 
-              value={name} 
-              onChange={(e) => setName(e.target.value)} 
-              required 
-              style={{ width: '100%', padding: '12px', marginTop: '6px', borderRadius: '8px', border: '1px solid #334e68', background: '#0b192c', color: '#fff', boxSizing: 'border-box', outline: 'none' }}
-            />
-          </div>
+          {!isLoginMode && (
+            <div>
+              <label style={{ color: '#cbd5e1', fontWeight: '500', fontSize: '14px' }}>Full Name:</label><br />
+              <input 
+                type="text" 
+                value={name} 
+                onChange={(e) => setName(e.target.value)} 
+                required={!isLoginMode}
+                style={{ width: '100%', padding: '12px', marginTop: '6px', borderRadius: '8px', border: '1px solid #334e68', background: '#0b192c', color: '#fff', boxSizing: 'border-box', outline: 'none' }}
+              />
+            </div>
+          )}
           <div>
             <label style={{ color: '#cbd5e1', fontWeight: '500', fontSize: '14px' }}>Email:</label><br />
             <input 
@@ -92,14 +102,26 @@ export default function LoginPage() {
               style={{ width: '100%', padding: '12px', marginTop: '6px', borderRadius: '8px', border: '1px solid #334e68', background: '#0b192c', color: '#fff', boxSizing: 'border-box', outline: 'none' }}
             />
           </div>
-          {error && <p style={{ color: '#ff6b6b', fontSize: '14px', textAlign: 'center' }}>{error}</p>}
+          
+          {error && <p style={{ color: '#ff6b6b', fontSize: '14px', textAlign: 'center', margin: 0 }}>{error}</p>}
+          
           <button 
             type="submit" 
             disabled={loading}
             style={{ padding: '14px', background: '#ff6b6b', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '16px', fontWeight: '600', transition: 'opacity 0.2s', marginTop: '10px' }}
           >
-            {loading ? 'Loading...' : 'Register & Continue'}
+            {loading ? 'Processing...' : (isLoginMode ? 'Sign In' : 'Register & Continue')}
           </button>
+
+          <div style={{ textAlign: 'center', marginTop: '15px' }}>
+            <button 
+              type="button" 
+              onClick={() => { setIsLoginMode(!isLoginMode); setError(''); }}
+              style={{ background: 'none', border: 'none', color: '#cbd5e1', cursor: 'pointer', fontSize: '14px', textDecoration: 'underline' }}
+            >
+              {isLoginMode ? "Don't have an account? Register here" : "Already have an account? Sign in"}
+            </button>
+          </div>
         </form>
       </div>
     </div>
