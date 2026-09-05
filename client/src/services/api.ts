@@ -55,3 +55,31 @@ export const getUserProfile = async (email: string) => {
     throw error.response?.data || { error: 'Failed to fetch user profile' };
   }
 };
+
+
+export interface CryptoMeme {
+  id: number;
+  title: string;
+  imageUrl: string;
+  postUrl: string;
+  score: number;
+  author: string;
+  license: string;
+}
+
+export const getMemes = async (): Promise<CryptoMeme[]> => {
+  try {
+    const response = await axios.get(`${API_URL}/memes`);
+
+    return (response.data.memes || []).map((meme: CryptoMeme) => ({
+      ...meme,
+      imageUrl: meme.imageUrl.startsWith('http')
+        ? meme.imageUrl
+        : `http://localhost:5000${meme.imageUrl}`,
+    }));
+  } catch (error: any) {
+    throw error.response?.data || {
+      error: 'Failed to fetch memes'
+    };
+  }
+};

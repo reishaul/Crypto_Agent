@@ -2,24 +2,42 @@ import express, { type Request, type Response } from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import User from './models/User.js'; //
+import axios from 'axios';
+import jwt from 'jsonwebtoken';
+
+import User from './models/User.js';
 import aiRoutes from './routes/aiRoutes.js';
 import { verifyToken } from './middleware/auth.js';
 
-import axios from 'axios';
+import bcrypt from 'bcrypt';
+import memesData from './memes.json' with { type: 'json' };
 
-import jwt from 'jsonwebtoken';
+interface CryptoMeme {
+  id: number;
+  title: string;
+  imageUrl: string;
+  postUrl: string;
+  score: number;
+  author: string;
+  license: string;
+}
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret'; //
+const memes = memesData as CryptoMeme[];
 
 dotenv.config();
 
 const app = express();
-app.use(express.json());
-app.use(cors());
-app.use('/api/ai', aiRoutes);
+
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || '';
+const JWT_SECRET = process.env.JWT_SECRET || '';
+
+app.use(express.json());
+app.use(cors());
+
+app.use('/memes', express.static('memes')); // Serve static meme images
+app.use('/api/ai', aiRoutes);
+
 
 // חיבור ל-MongoDB Atlas
 mongoose.connect(MONGO_URI)
@@ -37,11 +55,12 @@ app.post('/api/auth/register', async (req, res) => {
       return res.status(400).json({ error: 'The email is already registered in the system' });
     }
 
+    const passwordHash = await bcrypt.hash(password, 10);
     // יצירת משתמש חדש (שומרים את הסיסמה כפי שהיא או מוצפנת)
     const newUser = new User({
       name,
       email,
-      passwordHash: password, // בהמשך אפשר להוסיף הצפנה עם bcrypt
+      passwordHash, // בהמשך אפשר להוסיף הצפנה עם bcrypt
     });
 
     await newUser.save();
@@ -55,21 +74,47 @@ app.post('/api/auth/register', async (req, res) => {
 app.post('/api/auth/login', async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
+
     const user = await User.findOne({ email });
-    
+
     if (!user) {
-      return res.status(400).json({ error: 'User not found. Please register.' });
-    }
-    
-    // בדיקת סיסמה פשוטה (או השוואת hash אם מוגדר)
-    if (user.passwordHash !== password) {
-      return res.status(400).json({ error: 'Invalid password' });
+      return res.status(400).json({
+        error: 'User not found. Please register.'
+      });
     }
 
-    const token = jwt.sign({ userId: user._id, email: user.email }, JWT_SECRET, { expiresIn: '24h' });
-    res.status(200).json({ message: 'Login successful', token, user });
+    const isValidPassword = await bcrypt.compare(
+      password,
+      user.passwordHash
+    );
+
+    if (!isValidPassword) {
+      return res.status(400).json({
+        error: 'Invalid password'
+      });
+    }
+
+    const token = jwt.sign(
+      {
+        userId: user._id,
+        email: user.email
+      },
+      JWT_SECRET,
+      {
+        expiresIn: '24h'
+      }
+    );
+
+    res.status(200).json({
+      message: 'Login successful',
+      token,
+      user
+    });
+
   } catch (err) {
-    res.status(500).json({ error: 'Server error during login' });
+    res.status(500).json({
+      error: 'Server error during login'
+    });
   }
 });
 
@@ -113,6 +158,7 @@ app.get('/api/user/profile/:email', async (req, res) => {
     res.status(500).json({ error: 'Server error fetching user profile' });
   }
 });
+
 
 
 app.get('/api/users/profile', async (req, res) => {
@@ -190,4 +236,28 @@ app.get('/api/news', (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+});
+
+
+
+app.get('/api/memes', (req: Request, res: Response) => {
+  try {
+    if (!memes || memes.length === 0) {
+      return res.status(200).json({
+        memes: [],
+        message: 'No memes available'
+      });
+    }
+
+    return res.status(200).json({
+      memes: memes
+    });
+
+  } catch (error) {
+    console.error('Meme error:', error);
+
+    return res.status(500).json({
+      error: 'Unable to load memes'
+    });
+  }
 });
