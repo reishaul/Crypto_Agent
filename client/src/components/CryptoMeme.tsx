@@ -19,7 +19,7 @@ export default function CryptoMeme() {
   useEffect(() => {
     const fetchMemes = async () => {
       try {
-        const response = await fetch('https://ai-crypto-agent-s5ba.onrender.com/api/memes');
+        const response = await fetch(`${import.meta.env.BASE_URL}memes.json`);
 
         if (!response.ok) {
           throw new Error('Failed to load memes');
