@@ -9,7 +9,7 @@ import User from './models/User.js';
 import aiRoutes from './routes/aiRoutes.js';
 import { verifyToken } from './middleware/auth.js';
 
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import memesData from './memes.json' with { type: 'json' };
 
 interface CryptoMeme {
