@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 
-interface MemeItem {
+//this part is for the CryptoMeme component that will be displayed on the dashboard page. It will make a request
+// to the backend to get a random crypto meme and display it.
+
+// Define the structure of a Meme item
+interface MemeItem{
   id: number;
   title: string;
   imageUrl: string;
@@ -10,12 +14,14 @@ interface MemeItem {
   license: string;
 }
 
-export default function CryptoMeme() {
+// The CryptoMeme component fetches and displays a random crypto meme from the backend.
+export default function CryptoMeme(){
   const [memes, setMemes] = useState<MemeItem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  // Fetch memes from the backend when the component mounts
   useEffect(() => {
     const fetchMemes = async () => {
       try {
@@ -26,19 +32,22 @@ export default function CryptoMeme() {
         }
 
         const data = await response.json();
-        // אם השרת מחזיר את המערך בתוך אובייקט תחת המפתח memes
-        if (data && Array.isArray(data.memes)) {
+        // if the server returns the array within an object under the 'memes' key
+        if(data && Array.isArray(data.memes)) {
             setMemes(data.memes);
-        } else if (Array.isArray(data)) {
-            setMemes(data); // ליתר ביטחון אם השרת יחזיר ישר מערך
-        } else {
+        } 
+        else if(Array.isArray(data)) {
+            setMemes(data); 
+        } 
+        else{
             setError('Invalid memes response.');
         }
 
-      } catch (err) {
+      }catch (err) {
         console.error('Failed to load memes:', err);
         setError('Failed to load crypto memes.');
-      } finally {
+      } 
+      finally{
         setLoading(false);
       }
     };
@@ -46,24 +55,27 @@ export default function CryptoMeme() {
     fetchMemes();
   }, []);
 
-  const nextMeme = () => {
-    if (memes.length > 0) {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % memes.length);
+  // Function to go to the next meme in the list
+  const nextMeme = () =>{
+    if (memes.length > 0){
+      setCurrentIndex((prevIndex) =>(prevIndex + 1) % memes.length);
     }
   };
 
-  if (loading) return <div style={{ color: '#94a3b8', padding: '20px', textAlign: 'center' }}>Loading crypto memes...</div>;
-  if (error || memes.length === 0) return <div style={{ color: '#ff6b6b', padding: '20px', textAlign: 'center' }}>{error || 'No memes available'}</div>;
+  if(loading) return <div style={{ color: '#94a3b8', padding: '20px', textAlign: 'center' }}>Loading crypto memes...</div>;
+  if(error || memes.length === 0) return <div style={{ color: '#ff6b6b', padding: '20px', textAlign: 'center' }}>{error || 'No memes available'}</div>;
 
-  const currentMeme = memes[currentIndex];
+  const currentMeme = memes[currentIndex];//strictly typed as MemeItem
 //   const imageSrc = currentMeme.imageUrl.startsWith('http')
 //     ? currentMeme.imageUrl
 //     : `${import.meta.env.BASE_URL}${currentMeme.imageUrl.replace(/^\//, '')}`;
 
+// Adjust the image URL to ensure it is absolute, using the backend's base URL if necessary
   const imageSrc = currentMeme.imageUrl.startsWith('http')
     ? currentMeme.imageUrl
     : `https://ai-crypto-agent-s5ba.onrender.com${currentMeme.imageUrl.startsWith('/') ? '' : '/'}${currentMeme.imageUrl}`;
 
+    // Render the CryptoMeme component with a styled container and navigation button
   return (
     <div style={{ 
       padding: '24px', 
@@ -83,12 +95,12 @@ export default function CryptoMeme() {
         </span>
       </div>
       
-      {/* כותרת המימ */}
+      {/* the title of the meme */}
       <p style={{ fontSize: '15px', fontWeight: '600', margin: '10px 0', color: '#f1f5f9' }}>
         {currentMeme.title}
       </p>
 
-      {/* הצגת התמונה עצמה מתוך ה-JSON */}
+      {/* the image of the meme */}
       <div style={{ margin: '15px 0', background: 'rgba(255, 255, 255, 0.05)', padding: '10px', borderRadius: '10px', minHeight: '140px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <img 
           src={imageSrc} 

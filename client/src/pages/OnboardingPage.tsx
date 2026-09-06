@@ -3,7 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { saveOnboardingPreferences } from '../services/api';
 import CryptoRain from '../components/CryptoRain';
 
-export default function OnboardingPage() {
+// The OnboardingPage component collects user preferences for crypto assets, investor type, and content types. It provides a form
+//  for users to input their email and select their preferences. Upon submission, it saves the preferences to the backend and navigates
+// the user to the dashboard.
+
+//The component uses state to manage form inputs and handles form submission with error handling.
+export default function OnboardingPage(){
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [cryptoAssets, setCryptoAssets] = useState<string[]>([]);
@@ -17,7 +22,7 @@ export default function OnboardingPage() {
     );
   };
 
-  const handleContentToggle = (contentType: string) => {
+  const handleContentToggle =(contentType: string) =>{
     setContentTypes(prev =>
       prev.includes(contentType)
         ? prev.filter(item => item !== contentType)
@@ -25,17 +30,18 @@ export default function OnboardingPage() {
     );
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit= async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
+    try{
       await saveOnboardingPreferences(email, { cryptoAssets, investorType, contentTypes });
       navigate('/dashboard');
-    } catch (err: any) {
+    } 
+    catch (err: any){
       setError(err.error || 'Failed to save preferences');
     }
   };
 
-  return (
+  return(
     <div style={{
       minHeight: '100vh',
       display: 'flex',

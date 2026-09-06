@@ -1,19 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-interface CoinPricesProps {
+//this section is for the CoinPrices component that will be displayed on the dashboard page. It will take in the crypto assets as props and
+// will make a request to the Binance API to get the live prices of the selected crypto assets.
+
+// Define the props for the CoinPrices component
+interface CoinPricesProps{
   cryptoAssets: string[];
 }
 
+// The CoinPrices component fetches and displays live prices of selected crypto assets from the Binance API.
 export default function CoinPrices({ cryptoAssets }: CoinPricesProps) {
-  const [prices, setPrices] = useState<Record<string, number>>({});
+  const [prices, setPrices]= useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
 
-// מיפוי שמות המטבעות לסימולים של Binance
+// fix the binance symbol map
   const binanceSymbolMap: Record<string, string> = {
     'Bitcoin (BTC)': 'BTCUSDT',
     'Ethereum (ETH)': 'ETHUSDT',
     'Solana (SOL)': 'SOLUSDT',
+
     'Cardano (ADA)': 'ADAUSDT',
     'Ripple (XRP)': 'XRPUSDT',
   };
@@ -21,17 +27,16 @@ export default function CoinPrices({ cryptoAssets }: CoinPricesProps) {
   const fetchPrices = async () => {
     if (!cryptoAssets || cryptoAssets.length === 0) {
       setLoading(false);
-      return;
-    }
+      return;}
 
-    try {
+    try{
 
-    // שליפת כל המחירים מבינאנס בבקשה אחת ויחידה
-      const response = await axios.get('https://api.binance.com/api/v3/ticker/price');
-      const allTickers = response.data; // מערך של כל המטבעות בשוק
+    // get all tickers from Binance API
+      const response= await axios.get('https://api.binance.com/api/v3/ticker/price');
+      const allTickers = response.data; // array of objects with symbol and price
       const newPrices: Record<string, number> = {};
 
-    // מעבר על המטבעות שהמשתמש בחר ומציאת המחיר שלהם מתוך המערך הגדול
+    // go through the selected crypto assets and find their prices in the allTickers array
       cryptoAssets.forEach((asset) => {
         const symbol = binanceSymbolMap[asset];
         if (symbol) {
@@ -51,14 +56,14 @@ export default function CoinPrices({ cryptoAssets }: CoinPricesProps) {
   };
 
   useEffect(() => {
-    fetchPrices(); // טעינה ראשונית מידית
+    fetchPrices(); // fetch prices immediately on component mount
 
-    // הגדרת טיימר שרץ כל 10 שניות (10000 מילישניות)
+    // define an interval to fetch prices every 10 seconds
     const interval = setInterval(() => {
       fetchPrices();
     }, 10000);
 
-    // ניקוי הטיימר כשהקומפוננטה יורדת מהמסך
+    // cleanup the interval on component unmount
     return () => clearInterval(interval);
   }, [cryptoAssets]);
 

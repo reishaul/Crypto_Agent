@@ -8,23 +8,33 @@ import CryptoMeme from '../components/CryptoMeme';
 import CryptoRain from '../components/CryptoRain';
 import { saveFeedback } from '../services/api';
 
-export default function DashboardPage() {
+//this is the main dashboard page that will be displayed after the user logs in. It will display the user's profile information,
+//  the AI insight of the day, the coin prices, and the market news. It will also allow the user to give feedback on each section.
+
+
+// The DashboardPage component fetches and displays user profile information, AI insights, live coin prices, market news, and crypto memes. It 
+// also allows users to provide feedback on each section.
+export default function DashboardPage(){
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
   const [error, setError] = useState('');
   const [feedbackMessage, setFeedbackMessage] = useState('');
   const [voteStates, setVoteStates] = useState<Record<string, 'like' | 'dislike'>>({});
   
   const userEmail = localStorage.getItem('userEmail') || 'test@example.com';
 
+  // Fetch user profile data when the component mounts
   useEffect(() => {
     const fetchUserData = async () => {
-      try {
-        const data = await getUserProfile(userEmail);
+      try{
+        const data= await getUserProfile(userEmail);
         setUser(data);
-      } catch (err: any) {
+      }
+      catch (err: any){
         setError(err.error || 'Error loading data');
-      } finally {
+      }
+      finally{
         setLoading(false);
       }
     };
@@ -32,16 +42,18 @@ export default function DashboardPage() {
     fetchUserData();
   }, [userEmail]);
 
-  if (loading) return <div style={{ textAlign: 'center', padding: '80px', color: '#ffffff', background: '#0b192c', minHeight: '100vh', fontSize: '18px' }}>Loading your crypto terminal...</div>;
-  if (error) return <div style={{ textAlign: 'center', padding: '80px', color: '#ff6b6b', background: '#0b192c', minHeight: '100vh', fontSize: '18px' }}>{error}</div>;
+  // Display loading or error messages if applicable
+  if(loading) return <div style={{ textAlign: 'center',padding: '80px',color: '#ffffff', background: '#0b192c', minHeight: '100vh', fontSize: '18px' }}>Loading your crypto terminal...</div>;
+  if(error) return <div style={{ textAlign: 'center',padding: '80px',color: '#ff6b6b', background: '#0b192c', minHeight: '100vh', fontSize: '18px' }}>{error}</div>;
 
   const handleVote = async (contentId: string, voteType: 'like' | 'dislike') => {
-    try {
+    try{
       await saveFeedback({ userId: user?.email || userEmail, contentId, contentType: contentId, vote: voteType });
       setVoteStates(prev => ({ ...prev, [contentId]: voteType }));
       setFeedbackMessage('Your feedback was saved.');
       setTimeout(() => setFeedbackMessage(''), 2000);
-    } catch (err) {
+    } 
+    catch (err){
       console.error('Failed to save vote', err);
       setFeedbackMessage('Failed to save feedback.');
       setTimeout(() => setFeedbackMessage(''), 2000);
@@ -49,9 +61,9 @@ export default function DashboardPage() {
     };
 
   const getVoteButtonStyle = (contentId: string, voteType: 'like' | 'dislike') => {
-    const isActive = voteStates[contentId] === voteType;
+    const isActive= voteStates[contentId] === voteType;
 
-    return {
+    return{
       background: isActive
         ? voteType === 'like'
           ? 'rgba(16, 185, 129, 0.28)'
@@ -70,26 +82,25 @@ export default function DashboardPage() {
     } as const;
   };
 
-return (
+return(
     <div style={{ 
       minHeight: '100vh', 
       background: 'linear-gradient(135deg, #0b192c 0%, #102a43 50%, #1e3e62 100%)', 
-      padding: '30px 40px', // הגדלת הרווחים בצדדים במסך רחב
+      padding: '30px 40px', // reduced padding for a more compact layout
       fontFamily: 'sans-serif',
       boxSizing: 'border-box',
       width: '100%',
-      position: 'relative', // מאפשר למטבעות הנופלים להיות ממוקמים יחסית לדאשבורד
-      overflow: 'hidden' // מונע גלילה אופקית במקרה של מטבעות נופלים
+      position: 'relative', // allows the falling coins to be positioned relative to the dashboard
+      overflow: 'hidden' // prevents horizontal scrolling in case of falling coins
     }}>
 
+    {/* Render the CryptoRain component for a dynamic background effect */}
     <CryptoRain />
     
-      {/* הרחבת רוחב המקסימום של הטרמינל כדי שיתפוס את רוב מסך המחשב */}
-    {/*<div style={{ maxWidth: '1440px', margin: '0 auto', width: '100%' }}>*/}
-    <div style={{ maxWidth: '1440px', margin: '0 auto', width: '100%', position: 'relative', zIndex: 1 }}>
+    <div style={{ maxWidth: '1440px',margin: '0 auto', width: '100%',position: 'relative', zIndex: 1 }}>
         <Navbar />
         
-        {/* Hero Welcome Section */}
+        {/* Welcome Section */}
         <div style={{ 
           background: 'rgba(16, 42, 67, 0.8)', 
           backdropFilter: 'blur(10px)',
@@ -126,10 +137,10 @@ return (
           </div>
         </div>
 
-        {/* Main Grid Layout - פריסה רחבה המנצלת את כל רוחב המסך */}
+        {/* Main Grid Layout */}
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '25px', marginTop: '25px' }}>
           
-          {/* Left Column / Main Focus */}
+          {/* Left Column/ Main Focus */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
             <section>
               <CoinPrices cryptoAssets={user?.preferences?.cryptoAssets} />

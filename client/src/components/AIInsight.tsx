@@ -1,18 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-interface AIInsightProps {
+//this section is for the AI insight component that will be displayed on the dashboard page. It will take in the investor type and crypto assets as props and
+// will make a request to the backend to get the AI insight based on the user's profile.
+
+// Define the props for the AIInsight component
+interface AIInsightProps{
   investorType?: string;
   cryptoAssets?: string[];
 }
 
-export default function AIInsight({ investorType, cryptoAssets }: AIInsightProps) {
-  const [insight, setInsight] = useState('Analyzing market conditions...');
+// The AIInsight component fetches and displays personalized investment advice based on the user's investor type and tracked crypto assets.
+export default function AIInsight({ investorType, cryptoAssets }: AIInsightProps){
+  const [insight, setInsight]= useState('Analyzing market conditions...');
   const [loading, setLoading] = useState(true);
 
+  // Fetch AI insight whenever the investor type or crypto assets change
   useEffect(() => {
     const fetchInsight = async () => {
-      try {
+      try{
         const response = await axios.post(import.meta.env.VITE_API_URL + '/api/ai-insight', {
           investorType,
           cryptoAssets
@@ -30,6 +36,7 @@ export default function AIInsight({ investorType, cryptoAssets }: AIInsightProps
     fetchInsight();
   }, [investorType, cryptoAssets]);
 
+  // Render the AI insight component with a styled container and conditional loading state
   return (
     <div style={{ 
       padding: '24px', 

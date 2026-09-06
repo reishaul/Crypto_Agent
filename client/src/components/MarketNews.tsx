@@ -1,36 +1,43 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-interface NewsItem {
-  title: string;
-  source: { title: string };
-  published_at: string;
-  url: string;
-}
+// This component fetches and displays the latest market news related to cryptocurrencies. It makes a request to the backend API to retrieve news
+//  items and displays them in a styled container. The component handles loading states and error messages gracefully.
 
-export default function MarketNews() {
+// Define the structure of a news item
+interface NewsItem{
+  title: string;
+  source: {title: string };
+  published_at: string;
+  url: string;}
+
+// The MarketNews component fetches and displays the latest market news related to cryptocurrencies.
+export default function MarketNews(){
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
+
   const [error, setError] = useState('');
 
+  // Fetch the latest market news when the component mounts
   useEffect(() => {
     const fetchNews = async () => {
-      try {
+      try{
         const response = await axios.get(import.meta.env.VITE_API_URL + '/api/news');
         if (response.data && response.data.results) {
           setNews(response.data.results);
         }
-      } catch (err) {
+      } 
+      catch (err){
         setError('Failed to load market news.');
-      } finally {
-        setLoading(false);
-      }
+      } 
+      finally{
+        setLoading(false);}
     };
 
     fetchNews();
   }, []);
 
-  return (
+  return(
     <div style={{ 
       padding: '24px', 
       background: 'rgba(16, 42, 67, 0.8)', 

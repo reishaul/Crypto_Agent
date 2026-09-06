@@ -13,12 +13,12 @@ html, body {
 }
 
 :root {
-  --primary-dark: #102a43; /* הכחול הכהה מהלוגו */
-  --accent-coral: #ff6b6b; /* הכתום-קורל הבולט מהלוגו */
-  --bg-light: #f4f7f6;     /* רקע בהיר ונקי לעמודים */
-  --card-bg: #ffffff;      /* רקע לכרטיסיות */
-  --text-main: #334e68;    /* טקסט ראשי */
-  --text-light: #627d98;   /* טקסט משני */
+  --primary-dark: #102a43; 
+  --accent-coral: #ff6b6b; 
+  --bg-light: #f4f7f6;     /*background color for light themes*/
+  --card-bg: #ffffff;      /* background for cards */
+  --text-main: #334e68;    
+  --text-light: #627d98; 
 
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;

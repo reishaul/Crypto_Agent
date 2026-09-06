@@ -3,6 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { registerUser, loginUser } from '../services/api';
 import CryptoRain from '../components/CryptoRain';
 
+// The LoginPage component handles both user login and registration. It provides a form for users to enter their credentials, 
+// and it manages the state for form inputs, error messages, and loading status. Depending on the mode (login or register), 
+// it will call the appropriate API function and navigate the user to the dashboard or onboarding page upon success.
+
+// The component also includes a "Remember me" feature that saves the user's email in localStorage or sessionStorage based on their preference.
 export default function LoginPage() {
   const navigate = useNavigate();
   const [isLoginMode, setIsLoginMode] = useState(true);
@@ -14,15 +19,15 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // בדיקה אוטומטית אם המשתמש כבר מחובר בטעינת הדף
+  // Check if the user is already logged in and redirect to dashboard if so
   useEffect(() => {
     const savedEmail = localStorage.getItem('userEmail') || sessionStorage.getItem('userEmail');
-    if (savedEmail) {
+    if(savedEmail){
       navigate('/dashboard');
     }
   }, [navigate]);
 
-  // בדיקות תנאי סיסמה פרטניות עבור חיווי ויזואלי
+  // Password validation checks
   const hasMinLength = password.length >= 7;
   const hasLetter = /[a-zA-Z]/.test(password);
   const hasNumber = /[0-9]/.test(password);
@@ -32,13 +37,13 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
 
-    // בדיקות רק בעת רישום (Register)
-    if (!isLoginMode) {
-      if (!hasMinLength || !hasLetter || !hasNumber || !hasSpecial) {
+    // Validate registration
+    if(!isLoginMode) {
+      if(!hasMinLength|| !hasLetter || !hasNumber|| !hasSpecial) {
         setError('Please meet all password requirements.');
         return;
       }
-      if (password !== confirmPassword) {
+      if(password !== confirmPassword){
         setError('Passwords do not match.');
         return;
       }
@@ -46,34 +51,39 @@ export default function LoginPage() {
 
     setLoading(true);
 
-    try {
-      if (isLoginMode) {
+    try{
+      if (isLoginMode){
         await loginUser(email, password);
-      } else {
+      } 
+      else{
         await registerUser(name, email, password);
       }
 
-      // שמירה בהתאם לבחירת "זכור אותי"
-      if (rememberMe) {
+      // Save the user's email based on the "Remember me" preference
+      if(rememberMe) {
         localStorage.setItem('userEmail', email);
-      } else {
+      } 
+      else{
         sessionStorage.setItem('userEmail', email);
       }
 
-      // ניתוב בהתאם למצב
-      if (isLoginMode) {
+      // Navigate to the appropriate page based on the mode
+      if(isLoginMode){
         navigate('/dashboard');
-      } else {
+      } 
+      else{
         navigate('/onboarding');
       }
-    } catch (err: any) {
+    } 
+    catch (err: any){
       setError(err.error || 'Operation failed');
-    } finally {
+    } 
+    finally{
       setLoading(false);
     }
   };
 
-  return (
+  return(
     <div style={{
       minHeight: '100vh',
       display: 'flex',
@@ -85,8 +95,8 @@ export default function LoginPage() {
       fontFamily: 'sans-serif',
       boxSizing: 'border-box',
       width: '100%',
-      position: 'relative', // מאפשר למטבעות הנופלים להיות ממוקמים יחסית לדף ההתחברות
-      overflow: 'hidden' // מונע גלילה אופקית במקרה של מטבעות נופלים
+      position: 'relative', // allows the falling coins to be positioned relative to the login page
+      overflow: 'hidden' // prevents horizontal scrolling in case of falling coins
     }}>
 
 
@@ -150,7 +160,7 @@ export default function LoginPage() {
             />
           </div>
 
-          {/* הצגת דרישות סיסמה רק בעת הרשמה */}
+          {/* Show password requirements only during registration */}
           {!isLoginMode && (
             <div style={{ fontSize: '12px', background: 'rgba(11, 25, 44, 0.5)', padding: '10px', borderRadius: '6px', border: '1px solid #334e68' }}>
               <p style={{ color: '#94a3b8', margin: '0 0 6px 0', fontWeight: '600' }}>Password requirements:</p>

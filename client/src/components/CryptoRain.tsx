@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
 
-interface Drop {
+// This component creates a visual effect of falling Bitcoin symbols (₿) across the screen, simulating a "crypto rain" effect.
+//  It generates multiple drops with random properties such as position, size, opacity, and animation duration to create a dynamic and
+//  visually appealing background effect.
+
+// Define the structure of a single drop in the crypto rain effect
+interface Drop{
   id: number;
   left: number;
   duration: number;
@@ -9,18 +14,19 @@ interface Drop {
   delay: number;
 }
 
+// The CryptoRain component generates and renders multiple falling Bitcoin symbols across the screen.
 export default function CryptoRain() {
   const [drops, setDrops] = useState<Drop[]>([]);
 
   useEffect(() => {
-    // יצירת 25 מטבעות שנופלים במרווחים שונים
+    // Generate an array of drops with random properties for the crypto rain effect
     const generatedDrops: Drop[] = Array.from({ length: 25 }, (_, i) => ({
       id: i,
-      left: Math.random() * 100, // מיקום אופקי באחוזים
-      duration: Math.random() * 5 + 5, // מהירות נפילה (בין 5 ל-10 שניות)
-      size: Math.random() * 16 + 14, // גודל האייקון (בין 14px ל-30px)
-      opacity: Math.random() * 0.3 + 0.1, // שקיפות עדינה כדי שלא יפריע לקריאה
-      delay: Math.random() * 5, // השהייה אקראית בתחילת הנפילה
+      left: Math.random() * 100, // placement across the width of the screen
+      duration: Math.random() * 5 + 5, // 
+      size: Math.random() * 16 + 14, //size
+      opacity: Math.random() * 0.3 + 0.1, //transparency (בין 0.1 ל-0.4)
+      delay: Math.random() * 5, // randomdelay 
     }));
     setDrops(generatedDrops);
   }, []);
@@ -32,9 +38,9 @@ export default function CryptoRain() {
       left: 0,
       width: '100%',
       height: '100%',
-      pointerEvents: 'none', // מוודא שהלחיצות עוברות דרך המטבעות אל האלמנטים שמתחת
+      pointerEvents: 'none', // validates that the rain effect does not interfere with user interactions on the page
       overflow: 'hidden',
-      zIndex: 0 // ממוקם מתחת לתוכן של הדאשבורד
+      zIndex: 0 // places the rain effect behind other content on the page
     }}>
       {drops.map(drop => (
         <div
@@ -45,7 +51,7 @@ export default function CryptoRain() {
             left: `${drop.left}%`,
             fontSize: `${drop.size}px`,
             opacity: drop.opacity,
-            color: '#f7931a', // הצבע האופייני של ביטקוין
+            color: '#f7931a', //Bitcoin color
             animation: `fall ${drop.duration}s linear infinite`,
             animationDelay: `${drop.delay}s`,
             userSelect: 'none'
