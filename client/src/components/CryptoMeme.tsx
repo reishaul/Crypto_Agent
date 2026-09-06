@@ -19,19 +19,22 @@ export default function CryptoMeme() {
   useEffect(() => {
     const fetchMemes = async () => {
       try {
-        const response = await fetch(`${import.meta.env.BASE_URL}memes.json`);
+        const response = await fetch('https://ai-crypto-agent-s5ba.onrender.com/api/memes');
 
         if (!response.ok) {
           throw new Error('Failed to load memes');
         }
 
         const data = await response.json();
-
-        if (Array.isArray(data)) {
-          setMemes(data);
+        // אם השרת מחזיר את המערך בתוך אובייקט תחת המפתח memes
+        if (data && Array.isArray(data.memes)) {
+            setMemes(data.memes);
+        } else if (Array.isArray(data)) {
+            setMemes(data); // ליתר ביטחון אם השרת יחזיר ישר מערך
         } else {
-          setError('Invalid memes response.');
+            setError('Invalid memes response.');
         }
+
       } catch (err) {
         console.error('Failed to load memes:', err);
         setError('Failed to load crypto memes.');
@@ -53,9 +56,13 @@ export default function CryptoMeme() {
   if (error || memes.length === 0) return <div style={{ color: '#ff6b6b', padding: '20px', textAlign: 'center' }}>{error || 'No memes available'}</div>;
 
   const currentMeme = memes[currentIndex];
+//   const imageSrc = currentMeme.imageUrl.startsWith('http')
+//     ? currentMeme.imageUrl
+//     : `${import.meta.env.BASE_URL}${currentMeme.imageUrl.replace(/^\//, '')}`;
+
   const imageSrc = currentMeme.imageUrl.startsWith('http')
     ? currentMeme.imageUrl
-    : `${import.meta.env.BASE_URL}${currentMeme.imageUrl.replace(/^\//, '')}`;
+    : `https://ai-crypto-agent-s5ba.onrender.com${currentMeme.imageUrl.startsWith('/') ? '' : '/'}${currentMeme.imageUrl}`;
 
   return (
     <div style={{ 
