@@ -18,32 +18,30 @@ export default function CryptoMeme() {
 
   useEffect(() => {
     const fetchMemes = async () => {
-        try {
-            const response = await fetch('https://ai-crypto-agent-s5ba.onrender.com/api/memes');
+      try {
+        const response = await fetch('/memes.json');
 
         if (!response.ok) {
-            throw new Error('Failed to load memes');
+          throw new Error('Failed to load memes');
         }
 
         const data = await response.json();
 
-        console.log('MEMES:', data);
-
-        if (data.memes && Array.isArray(data.memes)) {
-            setMemes(data.memes);
+        if (Array.isArray(data)) {
+          setMemes(data);
         } else {
-            setError('Invalid memes response.');
+          setError('Invalid memes response.');
         }
-        } catch (err) {
+      } catch (err) {
         console.error('Failed to load memes:', err);
         setError('Failed to load crypto memes.');
-        } finally {
+      } finally {
         setLoading(false);
-        }
-     };
+      }
+    };
 
     fetchMemes();
- }, []);
+  }, []);
 
   const nextMeme = () => {
     if (memes.length > 0) {

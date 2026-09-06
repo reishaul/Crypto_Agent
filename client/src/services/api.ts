@@ -90,7 +90,7 @@ export const getMemes = async (): Promise<CryptoMeme[]> => {
       ...meme,
       imageUrl: meme.imageUrl.startsWith('http')
         ? meme.imageUrl
-        : `import.meta.env.VITE_API_URL${meme.imageUrl}`,
+        : meme.imageUrl,
     }));
   } catch (error: any) {
     throw error.response?.data || {
