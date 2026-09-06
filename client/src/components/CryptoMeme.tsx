@@ -27,8 +27,8 @@ export default function CryptoMeme() {
         if (Array.isArray(response.data)) {
             setMemes(response.data);
         } else if (response.data?.memes) {
-            console.log('Number of memes:', response.data.memes.length);
-            console.log('Memes:', response.data.memes);
+            //console.log('Number of memes:', response.data.memes.length);
+            //console.log('Memes:', response.data.memes);
             setMemes(response.data.memes);
 
         } else {

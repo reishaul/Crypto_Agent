@@ -1,15 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getUserProfile } from '../services/api';
 import Navbar from '../components/Navbar';
 import AIInsight from '../components/AIInsight';
 import CoinPrices from '../components/CoinPrices';
 import MarketNews from '../components/MarketNews';
 import CryptoMeme from '../components/CryptoMeme';
+import CryptoRain from '../components/CryptoRain';
+import { saveFeedback } from '../services/api';
 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [feedbackMessage, setFeedbackMessage] = useState('');
+  const [voteStates, setVoteStates] = useState<Record<string, 'like' | 'dislike'>>({});
   
   const userEmail = localStorage.getItem('userEmail') || 'test@example.com';
 
@@ -31,6 +35,41 @@ export default function DashboardPage() {
   if (loading) return <div style={{ textAlign: 'center', padding: '80px', color: '#ffffff', background: '#0b192c', minHeight: '100vh', fontSize: '18px' }}>Loading your crypto terminal...</div>;
   if (error) return <div style={{ textAlign: 'center', padding: '80px', color: '#ff6b6b', background: '#0b192c', minHeight: '100vh', fontSize: '18px' }}>{error}</div>;
 
+  const handleVote = async (contentId: string, voteType: 'like' | 'dislike') => {
+    try {
+      await saveFeedback({ userId: user?.email || userEmail, contentId, contentType: contentId, vote: voteType });
+      setVoteStates(prev => ({ ...prev, [contentId]: voteType }));
+      setFeedbackMessage('Your feedback was saved.');
+      setTimeout(() => setFeedbackMessage(''), 2000);
+    } catch (err) {
+      console.error('Failed to save vote', err);
+      setFeedbackMessage('Failed to save feedback.');
+      setTimeout(() => setFeedbackMessage(''), 2000);
+    }
+    };
+
+  const getVoteButtonStyle = (contentId: string, voteType: 'like' | 'dislike') => {
+    const isActive = voteStates[contentId] === voteType;
+
+    return {
+      background: isActive
+        ? voteType === 'like'
+          ? 'rgba(16, 185, 129, 0.28)'
+          : 'rgba(239, 68, 68, 0.28)'
+        : 'rgba(255,255,255,0.05)',
+      border: isActive
+        ? voteType === 'like'
+          ? '1px solid #10b981'
+          : '1px solid #ef4444'
+        : '1px solid #334e68',
+      color: isActive ? '#ffffff' : '#cbd5e1',
+      borderRadius: '4px',
+      padding: '4px 8px',
+      cursor: 'pointer',
+      boxShadow: isActive ? '0 0 0 1px rgba(255,255,255,0.08) inset' : 'none'
+    } as const;
+  };
+
 return (
     <div style={{ 
       minHeight: '100vh', 
@@ -38,10 +77,16 @@ return (
       padding: '30px 40px', // הגדלת הרווחים בצדדים במסך רחב
       fontFamily: 'sans-serif',
       boxSizing: 'border-box',
-      width: '100%'
+      width: '100%',
+      position: 'relative', // מאפשר למטבעות הנופלים להיות ממוקמים יחסית לדאשבורד
+      overflow: 'hidden' // מונע גלילה אופקית במקרה של מטבעות נופלים
     }}>
+
+    <CryptoRain />
+    
       {/* הרחבת רוחב המקסימום של הטרמינל כדי שיתפוס את רוב מסך המחשב */}
-      <div style={{ maxWidth: '1440px', margin: '0 auto', width: '100%' }}>
+    {/*<div style={{ maxWidth: '1440px', margin: '0 auto', width: '100%' }}>*/}
+    <div style={{ maxWidth: '1440px', margin: '0 auto', width: '100%', position: 'relative', zIndex: 1 }}>
         <Navbar />
         
         {/* Hero Welcome Section */}
@@ -86,17 +131,47 @@ return (
           
           {/* Left Column / Main Focus */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
-            <CoinPrices cryptoAssets={user?.preferences?.cryptoAssets} />
-            <AIInsight 
-              investorType={user?.preferences?.investorType} 
-              cryptoAssets={user?.preferences?.cryptoAssets} 
-            />
-            <MarketNews />
+            <section>
+              <CoinPrices cryptoAssets={user?.preferences?.cryptoAssets} />
+              <div style={{ display: 'flex', gap: '8px', marginTop: '12px', alignItems: 'center' }}>
+                <span style={{ fontSize: '12px', color: '#94a3b8' }}>Was this helpful?</span>
+                <button onClick={() => handleVote('coin_prices', 'like')} style={getVoteButtonStyle('coin_prices', 'like')}>👍</button>
+                <button onClick={() => handleVote('coin_prices', 'dislike')} style={getVoteButtonStyle('coin_prices', 'dislike')}>👎</button>
+              </div>
+            </section>
+
+            <section>
+              <AIInsight 
+                investorType={user?.preferences?.investorType} 
+                cryptoAssets={user?.preferences?.cryptoAssets} 
+              />
+              <div style={{ display: 'flex', gap: '8px', marginTop: '12px', alignItems: 'center' }}>
+                <span style={{ fontSize: '12px', color: '#94a3b8' }}>Was this helpful?</span>
+                <button onClick={() => handleVote('ai_insight_of_the_day', 'like')} style={getVoteButtonStyle('ai_insight_of_the_day', 'like')}>👍</button>
+                <button onClick={() => handleVote('ai_insight_of_the_day', 'dislike')} style={getVoteButtonStyle('ai_insight_of_the_day', 'dislike')}>👎</button>
+              </div>
+            </section>
+
+            <section>
+              <MarketNews />
+              <div style={{ display: 'flex', gap: '8px', marginTop: '12px', alignItems: 'center' }}>
+                <span style={{ fontSize: '12px', color: '#94a3b8' }}>Was this helpful?</span>
+                <button onClick={() => handleVote('market_news', 'like')} style={getVoteButtonStyle('market_news', 'like')}>👍</button>
+                <button onClick={() => handleVote('market_news', 'dislike')} style={getVoteButtonStyle('market_news', 'dislike')}>👎</button>
+              </div>
+            </section>
           </div>
 
           {/* Right Column / Side Widgets */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
-            <CryptoMeme />
+            <section>
+              <CryptoMeme />
+              <div style={{ display: 'flex', gap: '8px', marginTop: '12px', alignItems: 'center' }}>
+                <span style={{ fontSize: '12px', color: '#94a3b8' }}>Was this helpful?</span>
+                <button onClick={() => handleVote('crypto_meme', 'like')} style={getVoteButtonStyle('crypto_meme', 'like')}>👍</button>
+                <button onClick={() => handleVote('crypto_meme', 'dislike')} style={getVoteButtonStyle('crypto_meme', 'dislike')}>👎</button>
+              </div>
+            </section>
             
             {/* Quick Tracked Assets Card */}
             <div style={{ 
@@ -123,6 +198,10 @@ return (
                 <p style={{ color: '#94a3b8', fontSize: '14px' }}>No assets selected yet.</p>
               )}
             </div>
+
+            {feedbackMessage && (
+              <p style={{ color: '#94a3b8', fontSize: '12px', margin: 0 }}>{feedbackMessage}</p>
+            )}
 
           </div>
 

@@ -56,6 +56,15 @@ export const getUserProfile = async (email: string) => {
   }
 };
 
+export const saveFeedback = async (payload: { userId: string; contentId: string; contentType: string; vote: 'like' | 'dislike' }) => {
+  try {
+    const response = await axios.post(`${API_URL}/feedback`, payload);
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data || { error: 'Failed to save feedback' };
+  }
+};
+
 
 export interface CryptoMeme {
   id: number;

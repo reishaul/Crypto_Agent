@@ -31,8 +31,11 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || '';
 const JWT_SECRET = process.env.JWT_SECRET || '';
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || '';
 
 app.use(express.json());
+
+
 app.use(cors());
 
 app.use('/memes', express.static('memes')); // Serve static meme images
@@ -259,5 +262,78 @@ app.get('/api/memes', (req: Request, res: Response) => {
     return res.status(500).json({
       error: 'Unable to load memes'
     });
+  }
+});
+
+// נתיב לקבלת תובנות AI אמיתיות מ-OpenRouter
+app.post('/api/ai-insight', async (req, res) => {
+  try {
+    const { investorType, cryptoAssets } = req.body;
+
+    // מפתח API חינמי של OpenRouter (תוכל להחליף או לשמור במשתנה סביבה .env)
+    const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || 'your-openrouter-api-key-here';
+
+    const prompt = `You are a professional crypto financial advisor. The user has an "${investorType || 'Standard'}" investor profile and tracks these assets: ${cryptoAssets?.join(', ') || 'Bitcoin, Ethereum'}. Give a short, sharp, professional, and realistic 2-sentence market insight tailored to this profile.`;
+
+    const response = await axios.post(
+      'https://openrouter.ai/api/v1/chat/completions',
+      {
+        model: 'deepseek/deepseek-chat', // או כל ממודל חינמי אחר זמין ב-OpenRouter כמו mistralai/mistral-7b-instruct
+        messages: [{ role: 'user', content: prompt }]
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+          'HTTP-Referer': 'http://localhost:3000', // דרישת חובה של OpenRouter
+          'X-Title': 'Crypto Dashboard'
+        }
+      }
+    );
+
+    const insightText = response.data.choices[0]?.message?.content || 'Monitor your risk management closely in current market conditions.';
+    
+    res.status(200).json({ insight: insightText });
+  } catch (err: any) {
+    console.error('OpenRouter API Error:', err.response?.data || err.message);
+    
+    // במקרה של תקלת מפתח או רשת, מחזירים גיבוי איכותי כדי שהאתר לא יישבר
+    res.status(200).json({ 
+      insight: `Based on your crypto assets tracking: Maintain disciplined risk management and watch key resistance levels closely.` 
+    });
+  }
+});
+
+
+
+
+// הגדרת ה-Schema
+const feedbackSchema = new mongoose.Schema({
+  userId: String,
+  contentId: String,
+  contentType: String,
+  vote: {
+    type: String,
+    enum: ['like', 'dislike']
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
+});
+
+const Feedback = mongoose.model('Feedback', feedbackSchema);
+
+// הנתיב בשרת
+app.post('/api/feedback', async (req, res) => {
+  try {
+    const { userId, contentId, contentType, vote } = req.body;
+
+    // שמירת הפידבק החדש במסד הנתונים
+    const newFeedback = new Feedback({ userId, contentId, contentType, vote });
+    await newFeedback.save();
+
+    res.json({ message: 'Feedback saved successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Server error saving feedback' });
   }
 });
