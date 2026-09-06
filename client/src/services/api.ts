@@ -1,7 +1,13 @@
 import axios from 'axios';
 
 // כתובת השרת המקומי שלנו
-const API_URL = 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : 'http://localhost:5000/api';
+
+const API = axios.create({
+  baseURL: API_URL,
+});
+
+export default API;
 
 export const registerUser = async (name: string, email: string, password: string) => {
   try {
