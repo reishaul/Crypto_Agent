@@ -19,7 +19,8 @@ export default function CryptoMeme() {
   useEffect(() => {
     const fetchMemes = async () => {
       try {
-        const response = await fetch('/memes.json');
+        const memesUrl = `${import.meta.env.BASE_URL}memes.json`;
+        const response = await fetch(memesUrl);
 
         if (!response.ok) {
           throw new Error('Failed to load memes');
@@ -53,6 +54,9 @@ export default function CryptoMeme() {
   if (error || memes.length === 0) return <div style={{ color: '#ff6b6b', padding: '20px', textAlign: 'center' }}>{error || 'No memes available'}</div>;
 
   const currentMeme = memes[currentIndex];
+  const imageSrc = currentMeme.imageUrl.startsWith('http')
+    ? currentMeme.imageUrl
+    : `${import.meta.env.BASE_URL}${currentMeme.imageUrl.replace(/^\//, '')}`;
 
   return (
     <div style={{ 
@@ -81,7 +85,7 @@ export default function CryptoMeme() {
       {/* הצגת התמונה עצמה מתוך ה-JSON */}
       <div style={{ margin: '15px 0', background: 'rgba(255, 255, 255, 0.05)', padding: '10px', borderRadius: '10px', minHeight: '140px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <img 
-          src={currentMeme.imageUrl} 
+          src={imageSrc} 
           alt={currentMeme.title} 
           style={{ maxWidth: '100%', maxHeight: '160px', objectFit: 'contain', borderRadius: '6px' }}
         />
