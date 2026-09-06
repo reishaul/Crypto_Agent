@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 
 interface MemeItem {
   id: number;
@@ -20,17 +19,20 @@ export default function CryptoMeme() {
   useEffect(() => {
     const fetchMemes = async () => {
         try {
-        const response = await axios.get('http://localhost:5000/api/memes');
+        const response = await fetch(
+            import.meta.env.VITE_API_URL + "api/memes"
+        );
 
-        console.log('MEMES RESPONSE:', response.data);
+        if (!response.ok) {
+            throw new Error('Failed to load memes');
+        }
 
-        if (Array.isArray(response.data)) {
-            setMemes(response.data);
-        } else if (response.data?.memes) {
-            //console.log('Number of memes:', response.data.memes.length);
-            //console.log('Memes:', response.data.memes);
-            setMemes(response.data.memes);
+        const data = await response.json();
 
+        console.log('MEMES:', data);
+
+        if (data.memes && Array.isArray(data.memes)) {
+            setMemes(data.memes);
         } else {
             setError('Invalid memes response.');
         }
@@ -40,10 +42,10 @@ export default function CryptoMeme() {
         } finally {
         setLoading(false);
         }
-    };
+     };
 
     fetchMemes();
-    }, []);
+ }, []);
 
   const nextMeme = () => {
     if (memes.length > 0) {

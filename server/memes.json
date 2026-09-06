@@ -2,7 +2,7 @@
   {
     "id": 1,
     "title": "Hold Bitcoin!",
-    "imageUrl": "http://localhost:5000/memes/HoldBitcoin.svg",
+    "imageUrl": "https://ai-crypto-agent-s5ba.onrender.com/memes/HoldBitcoin.svg",
     "postUrl": "https://upload.wikimedia.org/wikipedia/commons/c/cf/Bitcoind_Hodl.svg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original",
     "score": 0,
     "author": "Rekneh",
@@ -12,7 +12,7 @@
   {
     "id": 2,
     "title": "SUPECAT",
-    "imageUrl": "http://localhost:5000/memes/SUPCAT.jpg",
+    "imageUrl": "https://ai-crypto-agent-s5ba.onrender.com/memes/SUPCAT.jpg",
     "postUrl": "https://upload.wikimedia.org/wikipedia/commons/0/00/SUPCAT.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original",
     "score": 0,
     "author": " ",
@@ -22,7 +22,7 @@
   {
     "id": 3,
     "title": "I Will Make Money Great Again !",
-    "imageUrl": "http://localhost:5000/memes/TRUMP.jpg",
+    "imageUrl": "https://ai-crypto-agent-s5ba.onrender.com/memes/TRUMP.jpg",
     "postUrl": "https://www.flickr.com/photos/95314425@N07/54276700402",
     "score": 0,
     "author": "Daniel Arrhakis",
@@ -32,7 +32,7 @@
   {
     "id": 4,
     "title": "Pepe Frog Meme Coin",
-    "imageUrl": "http://localhost:5000/memes/pepe.jpg",
+    "imageUrl": "https://ai-crypto-agent-s5ba.onrender.com/memes/pepe.jpg",
     "postUrl": "https://share.gemini.google/lKOmIL2F51W2",
     "score": 0,
     "author": "Rei",
@@ -42,7 +42,7 @@
   {
     "id": 5,
     "title": "solana Meme Coin",
-    "imageUrl": "http://localhost:5000/memes/sol.jpg",
+    "imageUrl": "https://ai-crypto-agent-s5ba.onrender.com/memes/sol.jpg",
     "postUrl": "https://share.gemini.google/mDhmaEglspnG",
     "score": 0,
     "author": "Rei",
@@ -52,7 +52,7 @@
   {
     "id": 6,
     "title": "eth to shekel meme",
-    "imageUrl": "http://localhost:5000/memes/eth_to_shekel.jpg",
+    "imageUrl": "https://ai-crypto-agent-s5ba.onrender.com/memes/eth_to_shekel.jpg",
     "postUrl": "https://share.gemini.google/EfxlrLTC7o7m",
     "score": 0,
     "author": "Rei",
