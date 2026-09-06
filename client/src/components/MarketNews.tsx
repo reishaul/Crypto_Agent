@@ -16,7 +16,7 @@ export default function MarketNews() {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/news');
+        const response = await axios.get(import.meta.env.VITE_API_URL + '/api/news');
         if (response.data && response.data.results) {
           setNews(response.data.results);
         }

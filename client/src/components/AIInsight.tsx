@@ -13,7 +13,7 @@ export default function AIInsight({ investorType, cryptoAssets }: AIInsightProps
   useEffect(() => {
     const fetchInsight = async () => {
       try {
-        const response = await axios.post('http://localhost:5000/api/ai-insight', {
+        const response = await axios.post(import.meta.env.VITE_API_URL + '/api/ai-insight', {
           investorType,
           cryptoAssets
         });
